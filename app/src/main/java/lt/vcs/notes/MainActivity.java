@@ -1,6 +1,7 @@
 package lt.vcs.notes;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
@@ -21,19 +22,24 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import lt.vcs.notes.database.DatabaseDataWorker;
 import lt.vcs.notes.database.OpenHelper;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String EXTRA_ID = "lt.vcs.notes.mainactivity.noteId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // TODO: move to a single place
         OpenHelper helper = new OpenHelper(this);
         SQLiteDatabase database = helper.getReadableDatabase();
+        DatabaseDataWorker worker = new DatabaseDataWorker(database);
 
-        List<Note> notes = getNotes();
+        List<Note> notes = worker.getAllNotes();
 
         setupListView(notes);
 
@@ -59,6 +65,22 @@ public class MainActivity extends AppCompatActivity {
         };
 
         noteList.setOnItemLongClickListener(listener);
+
+        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(MainActivity.this, EditNoteActivity.class);
+
+                Note clickedNote = notes.get(position);
+
+                intent.putExtra(EXTRA_ID, clickedNote.getId());
+
+                startActivity(intent);
+            }
+        };
+
+        noteList.setOnItemClickListener(clickListener);
     }
 
     private void showAlertDialog(int position, List<Note> notes, ArrayAdapter<Note> adapter) {
@@ -90,20 +112,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         button.setOnClickListener(listener);
-    }
-
-    private List<Note> getNotes() {
-        // Data
-        List<Note> notes = new ArrayList<>();
-        Note note1 = new Note(1, "This is the first note", "Description 1");
-        notes.add(note1);
-
-        Note note2 = new Note(2, "This is the second note", "Description 2");
-        notes.add(note2);
-
-        Note note3 = new Note(3, "This is the third note", "Description 3");
-        notes.add(note3);
-        return notes;
     }
 
     @Override

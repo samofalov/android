@@ -20,8 +20,8 @@ public class DatabaseContract {
                 "" + COLUMN_ID + "         INTEGER  PRIMARY KEY NOT NULL,   " +
                 "" + COLUMN_NAME + "       TEXT     NOT NULL,               " +
                 "" + COLUMN_CONTENT + "    TEXT     NOT NULL,               " +
-                "" + COLUMN_CREATEDATE + " DATETIME NOT NULL,               " +
-                "" + COLUMN_UPDATEDATE + " DATETIME                         " +
+                "" + COLUMN_CREATEDATE + " TEXT     NOT NULL,               " +
+                "" + COLUMN_UPDATEDATE + " TEXT                             " +
                 ");                                                         ";
     }
 }

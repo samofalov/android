@@ -18,6 +18,14 @@ public class Note {
         updateDate = LocalDateTime.now();
     }
 
+    public Note(int id, String name, String content, LocalDateTime createDate, LocalDateTime updateDate) {
+        this.id = id;
+        this.name = name;
+        this.content = content;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
+
     public int getId() {
         return id;
     }
