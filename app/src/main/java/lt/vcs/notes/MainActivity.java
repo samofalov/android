@@ -28,6 +28,9 @@ import lt.vcs.notes.database.OpenHelper;
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_ID = "lt.vcs.notes.mainactivity.noteId";
+    private ArrayAdapter<Note> adapter;
+    private List<Note> notes;
+    private DatabaseDataWorker worker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
         // TODO: move to a single place
         OpenHelper helper = new OpenHelper(this);
         SQLiteDatabase database = helper.getReadableDatabase();
-        DatabaseDataWorker worker = new DatabaseDataWorker(database);
+        worker = new DatabaseDataWorker(database);
 
-        List<Note> notes = worker.getAllNotes();
+        notes = worker.getAllNotes(true);
 
         setupListView(notes);
 
@@ -49,10 +52,19 @@ public class MainActivity extends AppCompatActivity {
         setupNewNoteButton();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        notes.clear();
+        notes.addAll(worker.getAllNotes(true));
+        adapter.notifyDataSetChanged();
+    }
+
     private void setupListView(List<Note> notes) {
         ListView noteList = findViewById(R.id.note_listview);
 
-        ArrayAdapter<Note> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
         noteList.setAdapter(adapter);
 
         AdapterView.OnItemLongClickListener listener = new AdapterView.OnItemLongClickListener() {
@@ -90,7 +102,12 @@ public class MainActivity extends AppCompatActivity {
         DialogInterface.OnClickListener yesListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                Note clickedNote = notes.get(position);
+                worker.deleteNote(clickedNote.getId());
+
                 notes.remove(position);
+
                 adapter.notifyDataSetChanged();
             }
         };

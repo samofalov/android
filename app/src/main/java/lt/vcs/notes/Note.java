@@ -9,6 +9,11 @@ public class Note {
     private String content;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+    private boolean isDeleted = false;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
 
     public Note(int id, String name, String content){
         this.id = id;
@@ -18,12 +23,13 @@ public class Note {
         updateDate = LocalDateTime.now();
     }
 
-    public Note(int id, String name, String content, LocalDateTime createDate, LocalDateTime updateDate) {
+    public Note(int id, String name, String content, LocalDateTime createDate, LocalDateTime updateDate, boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.content = content;
         this.createDate = createDate;
         this.updateDate = updateDate;
+        this.isDeleted = isDeleted;
     }
 
     public int getId() {

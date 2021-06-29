@@ -14,6 +14,7 @@ public class DatabaseContract {
         public static String COLUMN_CONTENT = "content";
         public static String COLUMN_CREATEDATE = "createDate";
         public static String COLUMN_UPDATEDATE = "updateDate";
+        public static String COLUMN_ISDELETED = "isDeleted";
 
         public static String CREATE_TABLE_SQL =
         "CREATE TABLE " + TABLE_NAME + " (			                        " +
@@ -21,7 +22,10 @@ public class DatabaseContract {
                 "" + COLUMN_NAME + "       TEXT     NOT NULL,               " +
                 "" + COLUMN_CONTENT + "    TEXT     NOT NULL,               " +
                 "" + COLUMN_CREATEDATE + " TEXT     NOT NULL,               " +
-                "" + COLUMN_UPDATEDATE + " TEXT                             " +
+                "" + COLUMN_UPDATEDATE + " TEXT             ,               " +
+                "" + COLUMN_ISDELETED +  " BOOLEAN  DEFAULT (0) NOT NULL    " +
                 ");                                                         ";
+
+        public static String DROP_TABLE_SQL = "DROP TABLE " + TABLE_NAME;
     }
 }

@@ -70,17 +70,29 @@ public class DatabaseDataWorker {
         database.update(entry.TABLE_NAME, values, "id = ?", new String[]{String.valueOf(id)});
     }
 
-    public List<Note> getAllNotes() {
+    public void deleteNote(int id) {
+
+        int isDeleted = 1;
+
+        ContentValues values = new ContentValues();
+        values.put(entry.COLUMN_ISDELETED, isDeleted);
+
+        database.update(entry.TABLE_NAME, values, "id = ?", new String[]{String.valueOf(id)});
+    }
+
+    public List<Note> getAllNotes(boolean loadDeletedNotes) {
 
         List<Note> notes = new ArrayList<>();
-        String[] columns = new String[]{entry.COLUMN_ID, entry.COLUMN_NAME, entry.COLUMN_CONTENT, entry.COLUMN_CREATEDATE, entry.COLUMN_UPDATEDATE};
+        String[] columns = new String[]{entry.COLUMN_ID, entry.COLUMN_NAME, entry.COLUMN_CONTENT, entry.COLUMN_CREATEDATE, entry.COLUMN_UPDATEDATE, entry.COLUMN_ISDELETED};
         Cursor cursor = database.query(entry.TABLE_NAME, columns, null , null, null, null, null);
 
         while(cursor.moveToNext()){
 
             Note retrievedNote = retrieveNoteInfo(cursor);
 
-            notes.add(retrievedNote);
+            if(loadDeletedNotes || !retrievedNote.isDeleted()){
+                notes.add(retrievedNote);
+            }
         }
 
         return notes;
@@ -105,6 +117,15 @@ public class DatabaseDataWorker {
         LocalDateTime createDate = FormatHelper.convertToDatetime(createDateText);
         LocalDateTime updateDate = FormatHelper.convertToDatetime(updateDateText);
 
-        return new Note(noteId, name, content, createDate, updateDate);
+        int isDeletedIndex = cursor.getColumnIndex(entry.COLUMN_ISDELETED);
+        int value = cursor.getInt(isDeletedIndex);
+        boolean isDeleted = convertToBoolean(value);
+
+        return new Note(noteId, name, content, createDate, updateDate, isDeleted);
+    }
+
+    private boolean convertToBoolean(int value) {
+
+        return value == 1;
     }
 }
