@@ -27,50 +27,48 @@ public class EditNoteActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         editableNoteId = intent.getIntExtra(EXTRA_ID, 0);
-        String idText = String.valueOf(editableNoteId);
 
-        TextView textView = findViewById(R.id.note_id);
-        textView.setText(idText);
+        if(editableNoteId > 0) {
 
-        // TODO: move to a single place
-        OpenHelper helper = new OpenHelper(this);
-        SQLiteDatabase database = helper.getReadableDatabase();
-        DatabaseDataWorker worker = new DatabaseDataWorker(database);
+            String idText = String.valueOf(editableNoteId);
 
-        Note editableNote = worker.getNoteById(editableNoteId);
+            TextView textView = findViewById(R.id.note_id);
+            textView.setText(idText);
 
-        EditText nameEditText = findViewById(R.id.note_name);
-        nameEditText.setText(editableNote.getName());
+            Note editableNote = DatabaseWorker.worker.getNoteById(editableNoteId);
 
-        EditText contentEditText = findViewById(R.id.note_content);
-        contentEditText.setText(editableNote.getContent());
+            EditText nameEditText = findViewById(R.id.note_name);
+            nameEditText.setText(editableNote.getName());
 
-        String createDateText = FormatHelper.convertToText(editableNote.getCreateDate());
-        TextView createDateTextView = findViewById(R.id.note_create_date);
-        createDateTextView.setText(createDateText);
+            EditText contentEditText = findViewById(R.id.note_content);
+            contentEditText.setText(editableNote.getContent());
 
-        String updateDateText = FormatHelper.convertToText(editableNote.getUpdateDate());
-        TextView updateDateTextView = findViewById(R.id.note_update_date);
-        updateDateTextView.setText(updateDateText);
+            String createDateText = FormatHelper.convertToText(editableNote.getCreateDate());
+            TextView createDateTextView = findViewById(R.id.note_create_date);
+            createDateTextView.setText(createDateText);
+
+            String updateDateText = FormatHelper.convertToText(editableNote.getUpdateDate());
+            TextView updateDateTextView = findViewById(R.id.note_update_date);
+            updateDateTextView.setText(updateDateText);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        // 1. Read a value from the text field
         EditText nameEditText = findViewById(R.id.note_name);
         String name = nameEditText.getText().toString();
 
         EditText contentEditText = findViewById(R.id.note_content);
         String content = contentEditText.getText().toString();
 
-        // 2. Add to DB
-        // TODO: move to a single place
-        OpenHelper helper = new OpenHelper(this);
-        SQLiteDatabase database = helper.getReadableDatabase();
-        DatabaseDataWorker worker = new DatabaseDataWorker(database);
+        if(editableNoteId > 0) {
+            DatabaseWorker.worker.updateNote(editableNoteId, name, content);
+        } else {
+            Note newNote = new Note(name, content);
 
-        worker.updateNote(editableNoteId, name, content);
+            DatabaseWorker.worker.insertNote(newNote);
+        }
     }
 }

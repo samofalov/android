@@ -23,7 +23,6 @@ public class DatabaseDataWorker {
 
     public long insertNote(Note note) {
 
-        int id = note.getId();
         String name = note.getName();
         String content = note.getContent();
         LocalDateTime createDate = note.getCreateDate();
@@ -33,7 +32,6 @@ public class DatabaseDataWorker {
         String updateDateText = FormatHelper.convertToText(updateDate);
 
         ContentValues values = new ContentValues();
-        values.put(entry.COLUMN_ID, id);
         values.put(entry.COLUMN_NAME, name);
         values.put(entry.COLUMN_CONTENT, content);
         values.put(entry.COLUMN_CREATEDATE, createDateText);
@@ -46,7 +44,7 @@ public class DatabaseDataWorker {
 
     public Note getNoteById(int id) {
 
-        String[] columns = new String[]{entry.COLUMN_ID, entry.COLUMN_NAME, entry.COLUMN_CONTENT, entry.COLUMN_CREATEDATE, entry.COLUMN_UPDATEDATE};
+        String[] columns = new String[]{entry.COLUMN_ID, entry.COLUMN_NAME, entry.COLUMN_CONTENT, entry.COLUMN_CREATEDATE, entry.COLUMN_UPDATEDATE, entry.COLUMN_ISDELETED};
 
         String[] ids = {String.valueOf(id)};
         Cursor cursor = database.query(entry.TABLE_NAME, columns, "id = ?", ids, null, null, null);

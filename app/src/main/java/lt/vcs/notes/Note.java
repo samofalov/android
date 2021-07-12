@@ -15,8 +15,7 @@ public class Note {
         return isDeleted;
     }
 
-    public Note(int id, String name, String content){
-        this.id = id;
+    public Note(String name, String content){
         this.name = name;
         this.content = content;
         createDate = LocalDateTime.now();

@@ -30,19 +30,17 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_ID = "lt.vcs.notes.mainactivity.noteId";
     private ArrayAdapter<Note> adapter;
     private List<Note> notes;
-    private DatabaseDataWorker worker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: move to a single place
-        OpenHelper helper = new OpenHelper(this);
-        SQLiteDatabase database = helper.getReadableDatabase();
-        worker = new DatabaseDataWorker(database);
+        if(DatabaseWorker.worker == null) {
+            DatabaseWorker.setupWorker(this);
+        }
 
-        notes = worker.getAllNotes(true);
+        notes = DatabaseWorker.worker.getAllNotes(true);
 
         setupListView(notes);
 
@@ -57,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         notes.clear();
-        notes.addAll(worker.getAllNotes(true));
+        notes.addAll(DatabaseWorker.worker.getAllNotes(true));
         adapter.notifyDataSetChanged();
     }
 
@@ -104,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 Note clickedNote = notes.get(position);
-                worker.deleteNote(clickedNote.getId());
+                DatabaseWorker.worker.deleteNote(clickedNote.getId());
 
                 notes.remove(position);
 
@@ -124,8 +122,9 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Click");
-                // TODO: Ability to add new note
+
+                Intent intent = new Intent(MainActivity.this, EditNoteActivity.class);
+                startActivity(intent);
             }
         };
         button.setOnClickListener(listener);
